@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <style>
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .track {
+      border-bottom: 1px solid black
+    }
+
+    *{margin: 0; padding: 0}
+    *{box-sizing: boder-box;}
+
+    .player {
+      transition: all 1s linear;
+    }
+  </style>
+  <title>React 组件通信</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="https://cdn.bootcss.com/react/16.8.2/umd/react.production.min.js"></script>
+  <script src="https://cdn.bootcss.com/react-dom/16.8.2/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+  <script type="text/babel">
+
+    class App extends React.Component {
+      constructor() {
+        super()
+        this.state = {
+          result1: 0,
+          result2: 0
+        }
+        this.t0 = new Date()
+      }
+
+      success1() {
+        let r1 = new Date() - this.t0
+        this.setState({
+          result1: r1
+        })
+      }
+
+      success2() {
+        let r2 = new Date() - this.t0
+        this.setState({
+          result2: r2
+        })
+      }
+
+      render() {
+        return (
+          <div>
+            <div className="header">
+              <Timer1 result={this.state.result1} />
+              <Timer2 result={this.state.result2} />
+            </div>
+            <Track1 success={this.success1.bind(this)} />
+            <Track2 success={this.success2.bind(this)} />
+          </div>
+        )
+      }
+
+    }
+
+    function Timer1(props) {
+      return (
+        <div>
+          <div><h2>🐰用时</h2></div>
+          <div>{props.result}</div>
+        </div>
+      )
+    }
+
+    function Timer2(props) {
+      return (
+        <div>
+          <div><h2>🐢用时</h2></div>
+          <div>{props.result}</div>
+        </div>
+      )
+    }
+
+    class Track1 extends React.Component {
+      constructor(props) {
+        let distance = 0
+        super(props)
+        this.state = {
+          style: {
+            transform: `translateX(${distance}%)`
+          }
+        }
+
+        let timerId = setInterval(() => {
+          if (distance < 100) {
+            distance += 10
+            this.setState({
+              style: {
+                transform: `translateX(${distance}%)`
+              }
+            })
+          } else {
+            this.props.success()
+            clearInterval(timerId)
+          }
+        }, 1000)
+      }
+
+      render() {
+        return(
+          <div>
+            <div className="player" style={this.state.style}><h2>🐰</h2></div>
+            <div className="track"></div>
+          </div>
+        )
+      }
+    }
+
+    class Track2 extends React.Component {
+      constructor(props) {
+        let distance = 0
+        super(props)
+        this.state = {
+          style: {
+            transform: `translateX(${distance}%)`
+          }
+        }
+
+        let timerId = setInterval(() => {
+          if (distance < 100) {
+            distance += 5
+            this.setState({
+              style: {
+                transform: `translateX(${distance}%)`
+              }
+            })
+          } else {
+            this.props.success()
+            clearInterval(timerId)
+          }
+
+        }, 1000)
+      }
+
+      render() {
+        return(
+          <div>
+            <div className="player" style={this.state.style}><h2>🐢</h2></div>
+            <div className="track"></div>
+          </div>
+        )
+      }
+    }
+
+    ReactDOM.render(
+      <App />,
+      document.querySelector('#app')
+    )
+
+  </script>
+</body>
+
+</html>
